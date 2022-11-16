@@ -18,9 +18,12 @@ import SpInAppUpdates, {
   StatusUpdateEvent,
 } from 'sp-react-native-in-app-updates';
 
-import codePush from 'react-native-code-push';
+import codePush, {CodePushOptions} from 'react-native-code-push';
 
-const codePushOptions = {checkFrequency: codePush.CheckFrequency.ON_APP_RESUME};
+const codePushOptions: CodePushOptions = {
+  checkFrequency: codePush.CheckFrequency.MANUAL,
+  installMode: codePush.InstallMode.IMMEDIATE,
+};
 
 const App = () => {
   const windowWidth = Dimensions.get('window').width;
@@ -29,6 +32,9 @@ const App = () => {
   const [isStatus, setIsStatus] = React.useState<any>();
   const [updateOptions, setUpdateOption] = React.useState<StartUpdateOptions>();
   const inAppUpdates = new SpInAppUpdates(false);
+
+  const [isSync, setIsSync] = React.useState<any>();
+  const [isProgress, setIsProgess] = React.useState<any>();
 
   useEffect(() => {
     inAppUpdates.checkNeedsUpdate().then((result: NeedsUpdateResponse) => {
@@ -47,12 +53,43 @@ const App = () => {
         }
       }
     });
+
+    codePush.sync(
+      undefined,
+      status => {
+        switch (status) {
+          case codePush.SyncStatus.CHECKING_FOR_UPDATE:
+            console.log('Checking for updates.');
+            break;
+          case codePush.SyncStatus.DOWNLOADING_PACKAGE:
+            console.log('Downloading package.');
+            setIsSync(true);
+            break;
+          case codePush.SyncStatus.INSTALLING_UPDATE:
+            console.log('Installing update.');
+            break;
+          case codePush.SyncStatus.UP_TO_DATE:
+            console.log('Up-to-date.');
+            setIsSync(false);
+            break;
+          case codePush.SyncStatus.UPDATE_INSTALLED:
+            console.log('Update installed.');
+            setIsSync(false);
+            setIsProgess(undefined);
+            break;
+        }
+      },
+      ({receivedBytes, totalBytes}) => {
+        /* Update download modal progress */
+        setIsProgess({receivedBytes, totalBytes});
+      },
+    );
   }, []);
 
   useEffect(() => {
     if (isStatus !== undefined) {
       if (isStatus === 4) {
-        removeStatusUpdateListener();
+        inAppUpdates.removeStatusUpdateListener(() => {});
       }
     }
   }, [isStatus]);
@@ -78,9 +115,40 @@ const App = () => {
           <Text>Mencoba CodePush</Text>
           <Text>Mencoba CodePush 2</Text>
           <Text>6(1.1)</Text>
+          <Text>test</Text>
           <Text>{isStatus}</Text>
         </View>
       </ScrollView>
+      {isSync === true ? (
+        <View
+          style={{
+            position: 'absolute',
+            backgroundColor: '#f1f1f1',
+            height: 20,
+            width: windowWidth,
+            display: 'flex',
+            alignItems: 'center',
+          }}>
+          <Text>
+            {isProgress?.receivedBytes} / {isProgress?.totalBytes}
+          </Text>
+        </View>
+      ) : null}
+      {isSync === undefined ? (
+        <View
+          style={{
+            position: 'absolute',
+            backgroundColor: '#f1f1f1',
+            height: 20,
+            width: windowWidth,
+            display: 'flex',
+            alignItems: 'center',
+          }}>
+          <Text>
+            sync apps
+          </Text>
+        </View>
+      ) : null}
       {updateOptions === undefined ? null : (
         <View
           style={{
@@ -104,6 +172,3 @@ const App = () => {
 };
 
 export default codePush(codePushOptions)(App);
-function removeStatusUpdateListener() {
-  throw new Error('Function not implemented.');
-}
