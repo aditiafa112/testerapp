@@ -7,7 +7,9 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "CodePush:ios": "appcenter CodePush release-react -a aditiafa/testapp -d Staging",
+    "CodePush:android": "appcenter CodePush release-react -a aditiafa/testapp-Android -d Staging"
   },
   "dependencies": {
     "react": "18.0.0",
