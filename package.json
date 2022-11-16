@@ -9,7 +9,9 @@
     "test": "jest",
     "lint": "eslint .",
     "CodePush:ios": "appcenter CodePush release-react -a aditiafa/testapp -d Staging",
-    "CodePush:android": "appcenter CodePush release-react -a aditiafa/testapp-Android -d Staging"
+    "CodePush:android": "appcenter CodePush release-react -a aditiafa/testapp-Android -d Staging",
+    "CodePush:ios:history": "appcenter codepush deployment history --app aditiafa/testapp Staging",
+    "CodePush:android:history": "appcenter codepush deployment history --app aditiafa/testapp-android Staging"
   },
   "dependencies": {
     "react": "18.0.0",
