@@ -9,6 +9,10 @@ import SpInAppUpdates, {
   StartUpdateOptions,
 } from 'sp-react-native-in-app-updates';
 
+import codePush from "react-native-code-push";
+
+const codePushOptions = { checkFrequency: codePush.CheckFrequency.ON_APP_START };
+
 const App = () => {
   const inAppUpdates = new SpInAppUpdates(false);
 
@@ -49,4 +53,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default codePush(App);

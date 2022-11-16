@@ -55,5 +55,7 @@
 	<array>
 		<string>itms-apps</string>
 	</array>
+	<key>CodePushDeploymentKey</key>
+	<string>key</string>
 </dict>
 </plist>
